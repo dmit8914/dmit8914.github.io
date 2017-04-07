@@ -20,17 +20,6 @@
             border: none;
             background: none;
         }
-        .adaptiveMarker{
-            position: absolute;
-            top: 10px;
-            left: 4px;
-            width: 14px;
-            height: 23px;
-            background-repeat: no-repeat;
-            background-image: url(images/svg/blue_pin.svg);
-            background-size: 14px 23px;
-            z-index: 999;
-        }
     </style>
 </head>
 <body>
@@ -38,9 +27,180 @@
 <div id="map"></div>
 
 <script>
+	access_token = window.location.search.match(/^\?token=(.*)$/);
+	access_token = (access_token && access_token.length > 1 && access_token[1]);
+	
+    geURL = 'https://geoenrich.arcgis.com/arcgis/rest/services/World/geoenrichmentserver/Geoenrichment';
+	reverseGeocodeURL = 'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode';
+    enrichURL = geURL + '/enrich';
+
     $j = jQuery.noConflict();
+
     var map = L.map('map').setView([45.526, -122.667], 15);
     L.esri.basemapLayer('Streets').addTo(map);
+	
+	var locationsLayer = L.featureGroup();
+	map.addLayer(locationsLayer);
+
+	var buffersLayer = L.featureGroup();
+	map.addLayer(buffersLayer);
+	
+    map.on('click', onMapClick);
+
+    function onMapClick(e) {
+		reverseGeocodeLocation(e.latlng).then(
+			function (gRes) {
+				var marker = L.marker(gRes.latlng);
+				
+				enrichLocation(gRes.location).then(
+					function (eRes) {
+						var style = {
+							lineCap: "butt",
+							lineJoin: "miter",
+							fill: true,
+							weight: 2,
+							color: "rgb(51,136,255)",
+							opacity: 1,
+							fillColor: "rgb(51,136,255)",
+							fillOpacity: 0.2
+						};
+												   
+						var layer = L.GeoJSON.geometryToLayer(eRes.geojsonFeature, style);
+						buffersLayer.addLayer(layer);
+					},
+					function (err) {
+						console.log(err);
+					}
+				);
+							
+				locationsLayer.addLayer(marker);
+				marker.bindPopup(gRes.address + '<br>A pretty CSS3 popup.<br> Easily customizable.').openPopup();
+			},
+			function (err) {
+				console.log(err);
+			}
+		);
+    }
+
+function reverseGeocodeLocation(latlng) {
+	var location = {
+		x: latlng.lng,
+		y: latlng.lat
+	};
+	
+	var d = $j.Deferred();
+
+	requestAgol({
+		url: reverseGeocodeURL,
+		data: {
+			location: JSON.stringify(location),
+			distance: 250
+		}
+	}).then(
+		function (response) {
+			var address = response && response.address && response.address.Match_addr;
+			var location = response && response.location;
+			d.resolve({
+				address: address,
+				location: location,
+				latlng: L.latLng(location.y, location.x)
+			});
+		},
+		function (err) {
+			d.reject(err);
+		}
+	);
+
+	return d;
+}
+
+function enrichLocation(location) {
+	var d = $j.Deferred();
+
+	requestAgol({
+		url: enrichURL,
+		data: {
+			studyareas: JSON.stringify([{
+				geometry: location
+			}]),
+			returnGeometry: true
+		}
+	}).then(
+		function (response) {
+			var featureSet = response &&
+				response.results &&
+				response.results.length &&
+				response.results[0].value &&
+				response.results[0].value.FeatureSet &&
+				response.results[0].value.FeatureSet.length &&
+				response.results[0].value.FeatureSet[0];
+			
+			if (!featureSet) {
+				d.reject('enrich: no data received')
+				return;
+			}
+			
+			var feature = featureSet &&
+				featureSet.features &&
+				featureSet.features.length &&
+				featureSet.features[0];
+			
+			var geojsonFeature = L.esri.Util.arcgisToGeoJSON(feature);
+			
+			d.resolve({
+				geojsonFeature: geojsonFeature,
+				feature: feature
+			});
+		},
+		function (err) {
+			d.reject(err);
+		}
+	);
+	
+	return d;
+	
+}
+
+function requestAgol(settings) {
+	var d = $j.Deferred();
+
+	function onSucess(response) {
+		// ArcGIS returns error with HTTP 2xx code, so handle it here
+		if (response.error) {
+			d.reject(response.error);
+		}
+		else {
+			d.resolve(response);
+		}
+	}
+
+	function onError(error) {
+		d.reject(error);
+	}
+
+	var _settings = $j.extend(true, {
+		data   : {
+			f: "json",
+			token: access_token
+		},
+		success: onSucess,
+		error  : onError,
+		type   : "GET"
+	}, settings);
+
+	if (_settings.data.f === "json" || _settings.data.f === "pjson") {
+		_settings.dataType = "json";
+	}
+
+	if (_settings.taskPath) {
+		_settings.url = _settings.url + _settings.taskPath;
+	}
+
+	$j.ajax(_settings);
+
+	return d;
+}
+
 </script>
 
 </body>
