@@ -65,7 +65,7 @@ function getCorrelation(xArray, yArray) {
   return {r: r, m: m, b: b};
 }
 
-d3.csv('http://charts.animateddata.co.uk/whatmakesushappy/data/summary.csv', function(data) {
+d3.csv('https://dmit8914.github.io/behave/data/summary.csv', function(data) {
 
   var xAxis = 'GDP', yAxis = 'Well-being';
   var xAxisOptions = ["GDP", "Equality", "Food consumption", "Alcohol consumption", "Energy consumption", "Family", "Working hours", "Work income", "Health spending", "Military spending"]
