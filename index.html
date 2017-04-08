@@ -1,93 +1,93 @@
 <head>
-    <meta charset=utf-8 />
-    <title>Infographics</title>
-    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <meta charset=utf-8 />
+  <title>Infographics</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 
-    <!-- Load Leaflet from CDN-->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+  <!-- Load Leaflet from CDN-->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
 
-    <!-- Load Esri Leaflet from CDN -->
-    <script src="https://unpkg.com/esri-leaflet@2.0.7"></script>
+  <!-- Load Esri Leaflet from CDN -->
+  <script src="https://unpkg.com/esri-leaflet@2.0.7"></script>
 
-    <style>
-        body { margin:0; padding:0; }
-        #map { position: absolute; top:0; bottom:0; right:0; left:0; }
-        .leaflet-div-icon {
-            /*background: rgba(255, 255, 255, 0);*/
-            border: none;
-            background: none;
-        }
-    </style>
+  <style>
+    body { margin:0; padding:0; }
+    #map { position: absolute; top:0; bottom:0; right:0; left:0; }
+    .leaflet-div-icon {
+        /*background: rgba(255, 255, 255, 0);*/
+        border: none;
+        background: none;
+    }
+  </style>
 </head>
 <body>
 
 <div id="map"></div>
 
 <script>
-	access_token = window.location.search.match(/^\?token=(.*)$/);
-	access_token = (access_token && access_token.length > 1 && access_token[1]);
-	
-    geURL = 'https://geoenrich.arcgis.com/arcgis/rest/services/World/geoenrichmentserver/Geoenrichment';
-	reverseGeocodeURL = 'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode';
-    enrichURL = geURL + '/enrich';
+  access_token = window.location.search.match(/^\?token=(.*)$/);
+  access_token = (access_token && access_token.length > 1 && access_token[1]);
 
-    $j = jQuery.noConflict();
+  geURL = 'https://geoenrich.arcgis.com/arcgis/rest/services/World/geoenrichmentserver/Geoenrichment';
+  reverseGeocodeURL = 'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode';
+  enrichURL = geURL + '/enrich';
 
-    var map = L.map('map').setView([45.526, -122.667], 15);
-    L.esri.basemapLayer('Streets').addTo(map);
-	
-	var locationsLayer = L.featureGroup();
-	map.addLayer(locationsLayer);
+  $j = jQuery.noConflict();
 
-	var buffersLayer = L.featureGroup();
-	map.addLayer(buffersLayer);
-	
-    map.on('click', onMapClick);
+  var map = L.map('map').setView([45.526, -122.667], 15);
+  L.esri.basemapLayer('Streets').addTo(map);
 
-    function onMapClick(e) {
-		reverseGeocodeLocation(e.latlng).then(
-			function (gRes) {
-				var marker = L.marker(gRes.latlng);
-				
-				enrichLocation(gRes.location).then(
-					function (eRes) {
-						var style = {
-							lineCap: "butt",
-							lineJoin: "miter",
-							fill: true,
-							weight: 2,
-							color: "rgb(51,136,255)",
-							opacity: 1,
-							fillColor: "rgb(51,136,255)",
-							fillOpacity: 0.2
-						};
-												   
-						var layer = L.GeoJSON.geometryToLayer(eRes.geojsonFeature, style);
-						buffersLayer.addLayer(layer);
-					},
-					function (err) {
-						console.log(err);
-					}
-				);
-							
-				locationsLayer.addLayer(marker);
-				marker.bindPopup(gRes.address + '<br>A pretty CSS3 popup.<br> Easily customizable.').openPopup();
-			},
-			function (err) {
-				console.log(err);
-			}
-		);
-    }
+  var locationsLayer = L.featureGroup();
+  map.addLayer(locationsLayer);
+
+  var buffersLayer = L.featureGroup();
+  map.addLayer(buffersLayer);
+
+  map.on('click', onMapClick);
+
+  function onMapClick(e) {
+    reverseGeocodeLocation(e.latlng).then(
+      function (gRes) {
+        var marker = L.marker(gRes.latlng);
+
+        enrichLocation(gRes.location).then(
+          function (eRes) {
+            var style = {
+              lineCap: "butt",
+              lineJoin: "miter",
+              fill: true,
+              weight: 2,
+              color: "rgb(51,136,255)",
+              opacity: 1,
+              fillColor: "rgb(51,136,255)",
+              fillOpacity: 0.2
+            };
+
+            var layer = L.GeoJSON.geometryToLayer(eRes.geojsonFeature, style);
+            buffersLayer.addLayer(layer);
+          },
+          function (err) {
+            console.log(err);
+          }
+        );
+
+        locationsLayer.addLayer(marker);
+        marker.bindPopup(gRes.address + '<br>A pretty CSS3 popup.<br> Easily customizable.').openPopup();
+      },
+      function (err) {
+        console.log(err);
+      }
+    );
+  }
 
 function reverseGeocodeLocation(latlng) {
 	var location = {
 		x: latlng.lng,
 		y: latlng.lat
 	};
-	
+
 	var d = $j.Deferred();
 
 	requestAgol({
@@ -134,19 +134,19 @@ function enrichLocation(location) {
 				response.results[0].value.FeatureSet &&
 				response.results[0].value.FeatureSet.length &&
 				response.results[0].value.FeatureSet[0];
-			
+
 			if (!featureSet) {
 				d.reject('enrich: no data received')
 				return;
 			}
-			
+
 			var feature = featureSet &&
 				featureSet.features &&
 				featureSet.features.length &&
 				featureSet.features[0];
-			
+
 			var geojsonFeature = L.esri.Util.arcgisToGeoJSON(feature);
-			
+
 			d.resolve({
 				geojsonFeature: geojsonFeature,
 				feature: feature
@@ -156,9 +156,8 @@ function enrichLocation(location) {
 			d.reject(err);
 		}
 	);
-	
+
 	return d;
-	
 }
 
 function requestAgol(settings) {
