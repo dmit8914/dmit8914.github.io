@@ -32,14 +32,14 @@ function reverseGeocodeLocation(latlng) {
 }
 
 var dataCollections = [
+	"food",
 	//"LifeInsurancePensions",
-	"SpendingTotal",
+	//"SpendingTotal",
 	//"TravelCEX",
-	"clothing",
+	//"clothing",
 	//"education",
 	//"entertainment",
 	//"financial",
-	"food",
 	//"miscellaneous",
 	//"transportation",
 	//"HealthPersonalCareCEX",
@@ -112,7 +112,7 @@ function requestAgol(settings) {
 
 	var _settings = $j.extend(true, {
 		data   : {
-			f: "json",
+			f: "pjson",
 			token: access_token
 		},
 		success: onSucess,
