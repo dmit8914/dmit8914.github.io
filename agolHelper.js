@@ -31,6 +31,21 @@ function reverseGeocodeLocation(latlng) {
 	return d;
 }
 
+var dataCollections = [
+	//"LifeInsurancePensions",
+	"SpendingTotal",
+	//"TravelCEX",
+	"clothing",
+	//"education",
+	//"entertainment",
+	//"financial",
+	"food",
+	//"miscellaneous",
+	//"transportation",
+	//"HealthPersonalCareCEX",
+	//"HousingHousehold",
+];
+
 function enrichLocation(location) {
 	var d = $j.Deferred();
 
@@ -40,6 +55,7 @@ function enrichLocation(location) {
 			studyareas: JSON.stringify([{
 				geometry: location
 			}]),
+			dataCollections: JSON.stringify(dataCollections),
 			returnGeometry: true
 		}
 	}).then(
