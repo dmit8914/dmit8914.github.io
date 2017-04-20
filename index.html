@@ -46,34 +46,30 @@
       left: 0;
       top: 0;
       background-color: rgb(0,0,0); /* Black fallback color */
-      background-color: rgba(0,0,0, 0.3); /* Black w/opacity */
+      background-color: rgba(0,0,0, 0.8); /* Black w/opacity */
       overflow-x: hidden; /* Disable horizontal scroll */
     }
 
-    /* Position the content inside the overlay */
-    /*.overlay-content {
-      position: relative;
-      top: 25%;
-      width: 100%;
-      text-align: center;
-      margin-top: 30px;
-    }*/
-
     /* The navigation links inside the overlay */
     .overlay a {
-      /* padding: 8px; */
       text-decoration: none;
       font-size: 36px;
       color: #DEDEDE;
-      /*display: block; Display block instead of inline */
     }
 
     /* Position the close button (top right corner) */
     .overlay .closebtn {
       position: absolute;
-      top: 20px;
+      top: 10px;
       right: 20px;
       font-size: 20px;
+    }
+
+    form {
+      color: #DEDEDE;
+      position: absolute;
+      right: 100px;
+      top: 10px;
     }
   </style>
 </head>
@@ -207,7 +203,6 @@ function openSunburstChart(marker) {
     };
   }
 
-  //var jsonUrl = "https://dmit8914.github.io/sunburst/flare.json";
   var jsonUrl = "https://dmit8914.github.io/food.json";
   d3.json(jsonUrl, function(error, root) {
     if (error) throw error;
@@ -270,7 +265,6 @@ function openClickableSunburstChart(marker) {
   // Keep track of the node that is currently being displayed as the root.
   var node;
 
-  //var jsonUrl = "https://dmit8914.github.io/sunburst/flare.json";
   var jsonUrl = "https://dmit8914.github.io/food.json";
   d3.json(jsonUrl, function(error, root) {
     node = root;
@@ -348,6 +342,7 @@ function openClickableSunburstChart(marker) {
 
 function closeSunburstChart() {
   $('#sunburstChart').css('height', '0%');
+  $('#sunburstChart svg').remove();
 }
 
 </script>
