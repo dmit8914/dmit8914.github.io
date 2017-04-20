@@ -189,10 +189,18 @@ function openSunburstChart(marker) {
       .value(function(d) { return 1; });
 
   var arc = d3.svg.arc()
-      .startAngle(function(d) { return d.x; })
-      .endAngle(function(d) { return d.x + d.dx; })
-      .innerRadius(function(d) { return Math.sqrt(d.y); })
-      .outerRadius(function(d) { return Math.sqrt(d.y + d.dy); });
+      .startAngle(function(d) {
+        return d.x;
+      })
+      .endAngle(function(d) {
+        return d.x + d.dx;
+      })
+      .innerRadius(function(d) {
+        return Math.sqrt(d.y);
+      })
+      .outerRadius(function(d) {
+        return Math.sqrt(d.y + d.dy);
+      });
 
   //var jsonUrl = "https://dmit8914.github.io/sunburst/flare.json";
   var jsonUrl = "https://dmit8914.github.io/food.json";
