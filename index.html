@@ -194,9 +194,10 @@ function openSunburstChart(marker) {
       .innerRadius(function(d) { return Math.sqrt(d.y); })
       .outerRadius(function(d) { return Math.sqrt(d.y + d.dy); });
 
-  d3.json("https://dmit8914.github.io/sunburst/flare.json", function(error, root) {
+  //var jsonUrl = "https://dmit8914.github.io/sunburst/flare.json";
+  var jsonUrl = "https://dmit8914.github.io/food.json";
+  d3.json(jsonUrl, function(error, root) {
     if (error) throw error;
-  //var vis = function(m) {
 
     var path = svg.datum(root).selectAll("path")
         .data(partition.nodes)
@@ -224,8 +225,6 @@ function openSunburstChart(marker) {
           .duration(1500)
           .attrTween("d", arcTween);
     });*/
-  //}
-  //  vis(marker);
   });
 }
 
