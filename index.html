@@ -14,6 +14,8 @@
   <!-- Load Esri Leaflet from CDN -->
   <script src="https://unpkg.com/esri-leaflet@2.0.7"></script>
 
+  <script src="https://d3js.org/d3.v3.min.js"></script>
+
   <script>
     access_token = window.location.search.match(/^\?token=(.*)$/);
     access_token = (access_token && access_token.length > 1 && access_token[1]);
@@ -46,17 +48,16 @@
       background-color: rgb(0,0,0); /* Black fallback color */
       background-color: rgba(0,0,0, 0.3); /* Black w/opacity */
       overflow-x: hidden; /* Disable horizontal scroll */
-      transition: 0.2s; /* 0.5 second transition effect to slide in or slide down the overlay (height or width, depending on reveal) */
     }
 
     /* Position the content inside the overlay */
-    .overlay-content {
+    /*.overlay-content {
       position: relative;
-      top: 25%; /* 25% from the top */
-      width: 100%; /* 100% width */
-      text-align: center; /* Centered text/links */
-      margin-top: 30px; /* 30px top margin to avoid conflict with the close button on smaller screens */
-    }
+      top: 25%;
+      width: 100%;
+      text-align: center;
+      margin-top: 30px;
+    }*/
 
     /* The navigation links inside the overlay */
     .overlay a {
@@ -65,7 +66,6 @@
       font-size: 36px;
       color: #DEDEDE;
       /*display: block; Display block instead of inline */
-      transition: 0.3s; /* Transition effects on hover (color) */
     }
 
     /* Position the close button (top right corner) */
@@ -88,12 +88,12 @@
   <a href="javascript:void(0)" class="closebtn" onclick="closeSunburstChart()">&times;</a>
 
   <!-- Overlay content -->
-  <div class="overlay-content">
+  <!-- <div class="overlay-content">
     <a href="#">About</a>
     <a href="#">Services</a>
     <a href="#">Clients</a>
     <a href="#">Contact</a>
-  </div>
+  </div> -->
 
 </div>
 
@@ -155,8 +155,7 @@ $( function() {
           .append($('<br>'))
           .append(openChartLink)
           .on('click', '.openChartLink', function(e){
-            console.log(marker.address);
-            openSunburstChart();
+            openSunburstChart(marker);
           });
 
         marker.bindPopup(popup[0]).openPopup();
@@ -168,9 +167,84 @@ $( function() {
   }
 } );
 
-function openSunburstChart() {
+function openSunburstChart(marker) {
   $('#sunburstChart').css('height', '100%');
+  //console.log(marker.address);
+
+  var width = 960,
+      height = 700,
+      radius = Math.min(width, height) / 2,
+      color = d3.scale.category20c();
+
+  var svg = d3.select("#sunburstChart")
+    .append("svg")
+      .attr("width", width)
+      .attr("height", height)
+    .append("g")
+      .attr("transform", "translate(" + width / 2 + "," + height * .52 + ")");
+
+  var partition = d3.layout.partition()
+      .sort(null)
+      .size([2 * Math.PI, radius * radius])
+      .value(function(d) { return 1; });
+
+  var arc = d3.svg.arc()
+      .startAngle(function(d) { return d.x; })
+      .endAngle(function(d) { return d.x + d.dx; })
+      .innerRadius(function(d) { return Math.sqrt(d.y); })
+      .outerRadius(function(d) { return Math.sqrt(d.y + d.dy); });
+
+  d3.json("https://dmit8914.github.io/sunburst/flare.json", function(error, root) {
+    if (error) throw error;
+  //var vis = function(m) {
+
+    var path = svg.datum(root).selectAll("path")
+        .data(partition.nodes)
+      .enter().append("path")
+        .attr("display", function(d) { return d.depth ? null : "none"; }) // hide inner ring
+        .attr("d", arc)
+        .style("stroke", "#fff")
+        .style("fill", function(d) {
+          var xxx = d.children ? d : d.parent;
+          var yyy = xxx.name;
+          var retVal = color(yyy);
+          return retVal;
+        })
+        .style("fill-rule", "evenodd")
+        .each(stash);
+
+    /*d3.selectAll("input").on("change", function change() {
+      var value = this.value === "count"
+          ? function() { return 1; }
+          : function(d) { return d.size; };
+
+      path
+          .data(partition.value(value).nodes)
+        .transition()
+          .duration(1500)
+          .attrTween("d", arcTween);
+    });*/
+  //}
+  //  vis(marker);
+  });
 }
+
+// Stash the old values for transition.
+function stash(d) {
+  d.x0 = d.x;
+  d.dx0 = d.dx;
+}
+
+// Interpolate the arcs in data space.
+/*function arcTween(a) {
+  var i = d3.interpolate({x: a.x0, dx: a.dx0}, a);
+  return function(t) {
+    var b = i(t);
+    a.x0 = b.x;
+    a.dx0 = b.dx;
+    return arc(b);
+  };
+}*/
 
 function closeSunburstChart() {
   $('#sunburstChart').css('height', '0%');
