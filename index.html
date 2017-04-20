@@ -148,7 +148,7 @@ $( function() {
           .append($('<br>'))
           .append(openChartLink)
           .on('click', '.openChartLink', function(e){
-            openSunburstChart(marker);
+            openClickableSunburstChart(marker);
           });
 
         marker.bindPopup(popup[0]).openPopup();
