@@ -87,13 +87,10 @@
   <!-- Button to close the overlay navigation -->
   <a href="javascript:void(0)" class="closebtn" onclick="closeSunburstChart()">&times;</a>
 
-  <!-- Overlay content -->
-  <!-- <div class="overlay-content">
-    <a href="#">About</a>
-    <a href="#">Services</a>
-    <a href="#">Clients</a>
-    <a href="#">Contact</a>
-  </div> -->
+  <form>
+    <label><input type="radio" name="mode" value="size"> Size</label>
+    <label><input type="radio" name="mode" value="count" checked> Count</label>
+  </form>
 
 </div>
 
@@ -169,7 +166,6 @@ $( function() {
 
 function openSunburstChart(marker) {
   $('#sunburstChart').css('height', '100%');
-  //console.log(marker.address);
 
   var width = 960,
       height = 700,
@@ -202,6 +198,23 @@ function openSunburstChart(marker) {
         return Math.sqrt(d.y + d.dy);
       });
 
+  // Stash the old values for transition.
+  function stash(d) {
+    d.x0 = d.x;
+    d.dx0 = d.dx;
+  }
+
+  // Interpolate the arcs in data space.
+  function arcTween(a) {
+    var i = d3.interpolate({x: a.x0, dx: a.dx0}, a);
+    return function(t) {
+      var b = i(t);
+      a.x0 = b.x;
+      a.dx0 = b.dx;
+      return arc(b);
+    };
+  }
+
   //var jsonUrl = "https://dmit8914.github.io/sunburst/flare.json";
   var jsonUrl = "https://dmit8914.github.io/food.json";
   d3.json(jsonUrl, function(error, root) {
@@ -216,42 +229,25 @@ function openSunburstChart(marker) {
         .style("fill", function(d) {
           var xxx = d.children ? d : d.parent;
           var yyy = xxx.name;
-          var retVal = color(yyy);
+          var retVal = color(d.name);
           return retVal;
         })
         .style("fill-rule", "evenodd")
         .each(stash);
 
-    /*d3.selectAll("input").on("change", function change() {
+    d3.selectAll("input").on("change", function change() {
       var value = this.value === "count"
           ? function() { return 1; }
-          : function(d) { return d.size; };
+          : function(d) { return marker.areaFeature.properties[d.name]; };
 
       path
           .data(partition.value(value).nodes)
         .transition()
           .duration(1500)
           .attrTween("d", arcTween);
-    });*/
+    });
   });
 }
-
-// Stash the old values for transition.
-function stash(d) {
-  d.x0 = d.x;
-  d.dx0 = d.dx;
-}
-
-// Interpolate the arcs in data space.
-/*function arcTween(a) {
-  var i = d3.interpolate({x: a.x0, dx: a.dx0}, a);
-  return function(t) {
-    var b = i(t);
-    a.x0 = b.x;
-    a.dx0 = b.dx;
-    return arc(b);
-  };
-}*/
 
 function closeSunburstChart() {
   $('#sunburstChart').css('height', '0%');
