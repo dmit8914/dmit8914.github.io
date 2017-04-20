@@ -5,7 +5,7 @@ function reverseGeocodeLocation(latlng) {
 		y: latlng.lat
 	};
 
-	var d = $j.Deferred();
+	var d = $.Deferred();
 
 	requestAgol({
 		url: reverseGeocodeURL,
@@ -47,7 +47,7 @@ var dataCollections = [
 ];
 
 function enrichLocation(location) {
-	var d = $j.Deferred();
+	var d = $.Deferred();
 
 	requestAgol({
 		url: enrichURL,
@@ -94,7 +94,7 @@ function enrichLocation(location) {
 }
 
 function requestAgol(settings) {
-	var d = $j.Deferred();
+	var d = $.Deferred();
 
 	function onSucess(response) {
 		// ArcGIS returns error with HTTP 2xx code, so handle it here
@@ -110,7 +110,7 @@ function requestAgol(settings) {
 		d.reject(error);
 	}
 
-	var _settings = $j.extend(true, {
+	var _settings = $.extend(true, {
 		data   : {
 			f: "pjson",
 			token: access_token
@@ -128,7 +128,7 @@ function requestAgol(settings) {
 		_settings.url = _settings.url + _settings.taskPath;
 	}
 
-	$j.ajax(_settings);
+	$.ajax(_settings);
 
 	return d;
 }

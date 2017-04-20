@@ -1,9 +1,11 @@
 <head>
   <meta charset=utf-8 />
-  <title>Infographics</title>
+  <title>Test</title>
   <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
   <!-- Load Leaflet from CDN-->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
@@ -13,8 +15,6 @@
   <script src="https://unpkg.com/esri-leaflet@2.0.7"></script>
 
   <script>
-    $j = jQuery.noConflict();
-
     access_token = window.location.search.match(/^\?token=(.*)$/);
     access_token = (access_token && access_token.length > 1 && access_token[1]);
 
@@ -40,7 +40,9 @@
 <div id="map"></div>
 
 <script>
-  var map = L.map('map').setView([45.526, -122.667], 15);
+$( function() {
+
+  var map = L.map('map').setView([45.526, -122.667], 12);
   L.esri.basemapLayer('Streets').addTo(map);
 
   var locationsLayer = L.featureGroup();
@@ -55,6 +57,7 @@
     reverseGeocodeLocation(e.latlng).then(
       function (gRes) {
         var marker = L.marker(gRes.latlng);
+        marker.address = gRes.address;
 
         enrichLocation(gRes.location).then(
           function (eRes) {
@@ -71,6 +74,8 @@
 
             var layer = L.GeoJSON.geometryToLayer(eRes.geojsonFeature, style);
             buffersLayer.addLayer(layer);
+
+            marker.areaFeature = eRes.geojsonFeature;
           },
           function (err) {
             console.log(err);
@@ -78,13 +83,31 @@
         );
 
         locationsLayer.addLayer(marker);
-        marker.bindPopup(gRes.address + '<br>A pretty CSS3 popup.<br> Easily customizable.').openPopup();
+
+        var openChartLink =
+          $('<a>')
+          .attr('id', 'xxx')
+          .attr('href', '#')
+          .addClass('openChartLink')
+          .html("Spending Sunburst");
+
+        var popup =
+          $('<div>')
+          .append(gRes.address)
+          .append($('<br>'))
+          .append(openChartLink)
+          .on('click', '.openChartLink', function(e){
+            console.log(marker.address);
+          });
+
+        marker.bindPopup(popup[0]).openPopup();
       },
       function (err) {
         console.log(err);
       }
     );
   }
+} );
 </script>
 
 </body>
