@@ -135,19 +135,31 @@ $( function() {
 
         locationsLayer.addLayer(marker);
 
-        var openChartLink =
+        var openSimpleStarburstLink =
           $('<a>')
           .attr('id', 'xxx')
           .attr('href', 'javascript:void(0)')
-          .addClass('openChartLink')
-          .html("Spending Sunburst");
+          .addClass('openSimpleStarburst')
+          .html("Food Spending Simple Sunburst");
+
+        var openClickableStarburstLink =
+          $('<a>')
+          .attr('id', 'xxx')
+          .attr('href', 'javascript:void(0)')
+          .addClass('openClickableStarburst')
+          .html("Food Spending Clickable Sunburst");
 
         var popup =
           $('<div>')
           .append(gRes.address)
           .append($('<br>'))
-          .append(openChartLink)
-          .on('click', '.openChartLink', function(e){
+          .append(openSimpleStarburstLink)
+          .append($('<br>'))
+          .append(openClickableStarburstLink)
+          .on('click', '.openSimpleStarburst', function(e){
+            openSimpleSunburstChart(marker);
+          })
+          .on('click', '.openClickableStarburst', function(e){
             openClickableSunburstChart(marker);
           });
 
@@ -160,7 +172,7 @@ $( function() {
   }
 } );
 
-function openSunburstChart(marker) {
+function openSimpleSunburstChart(marker) {
   $('#sunburstChart').css('height', '100%');
 
   var width = 960,
