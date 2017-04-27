@@ -70,7 +70,7 @@
         }
     }
 
-	var webmap = L.esri.webMap(webmapId, { map: L.map("map") });
+	var webmap = L.esri.webMap(webmapId, { map: L.map("map"), 'token': 'qyPOFl28yd4KP9lLN0eFQ_5ZHdc_tcvbKxKFkKt5pSBJD1TyY1XC2S_YMDZbq09g32zbRqCcu0BpbOLL5FXNTUvi9Tp69oiwQ_Q_6WRylZIlWLf7BMo_eU32AUfMbQczjIvAFmA8BGl--l3dg0xtX54l7b-UhqqbQPNo6zm74h2FKQV3bXGHuri7Kd6l2DPq' });
 
     webmap.on('metadataLoad', function() {
         var MapTitleControl = L.Control.extend({
