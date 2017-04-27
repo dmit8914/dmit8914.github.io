@@ -1,102 +1,104 @@
-<!DOCTYPE HTML>
-<!--
-	Identity by HTML5 UP
-	html5up.net | @n33co
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
--->
 <html>
-	<head>
-		<title>Yusuke Nunokawa</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<!--[if lte IE 8]><script src="assets/js/html5shiv.js"></script><![endif]-->
-		<link rel="stylesheet" href="assets/css/main.css" />
-		<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
-		<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
-		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
-	</head>
-	<body class="is-loading">
+<head>
+  <meta charset=utf-8 />
+  <title>L.esri.WebMap Demo</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
 
-		<!-- Wrapper -->
-			<div id="wrapper">
+    <!-- Load Leaflet from CDN-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/leaflet/1.0.0-rc.3/leaflet.css" />
+    <script src="https://cdn.jsdelivr.net/leaflet/1.0.0-rc.3/leaflet-src.js"></script>
 
-				<!-- Main -->
-					<section id="main">
-						<header>
-							<span class="avatar"><img style="width:150px;" src="images/avatar.jpg" alt="" /></span>
-							<h1>Yusuke Nunokawa</h1>
-							<p>Web Developer</p>
-						</header>
-						<!--
-						<hr />
-						<h2>Extra Stuff!</h2>
-						<form method="post" action="#">
-							<div class="field">
-								<input type="text" name="name" id="name" placeholder="Name" />
-							</div>
-							<div class="field">
-								<input type="email" name="email" id="email" placeholder="Email" />
-							</div>
-							<div class="field">
-								<div class="select-wrapper">
-									<select name="department" id="department">
-										<option value="">Department</option>
-										<option value="sales">Sales</option>
-										<option value="tech">Tech Support</option>
-										<option value="null">/dev/null</option>
-									</select>
-								</div>
-							</div>
-							<div class="field">
-								<textarea name="message" id="message" placeholder="Message" rows="4"></textarea>
-							</div>
-							<div class="field">
-								<input type="checkbox" id="human" name="human" /><label for="human">I'm a human</label>
-							</div>
-							<div class="field">
-								<label>But are you a robot?</label>
-								<input type="radio" id="robot_yes" name="robot" /><label for="robot_yes">Yes</label>
-								<input type="radio" id="robot_no" name="robot" /><label for="robot_no">No</label>
-							</div>
-							<ul class="actions">
-								<li><a href="#" class="button">Get Started</a></li>
-							</ul>
-						</form>
-						<hr />
-						-->
-						<footer>
-							<ul class="icons">
-								<li><a href="https://twitter.com/_ynunokawa" class="fa-twitter">Twitter</a></li>
-								<!--<li><a href="#" class="fa-instagram">Instagram</a></li>-->
-								<li><a href="https://www.facebook.com/nuno0825" class="fa-facebook">Facebook</a></li>
-								<li><a href="https://github.com/ynunokawa" class="fa-github">GitHub</a></li>
-							</ul>
-							<ul class="icons">
-								<li><a href="http://muxlab.github.io" class="fa-flask">MUX Lab</a></li>
-								<li><a href="https://keiopicnicclub.github.io" class="fa-heart">KEIO Picnic Club</a></li>
-							</ul>
-						</footer>
-					</section>
+    <!-- Load Esri Leaflet from CDN -->
+    <script src="https://cdn.jsdelivr.net/leaflet.esri/2.0.2/esri-leaflet.js"></script>
 
-				<!-- Footer -->
-					<footer id="footer">
-						<ul class="copyright">
-							<li>&copy; Yusuke Nunokawa</li>
-							<li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
-						</ul>
-					</footer>
+	<!-- Load Leaflet Heat from CDN -->
+	<script src="https://rawgit.com/Leaflet/Leaflet.heat/gh-pages/dist/leaflet-heat.js"></script>
 
-			</div>
+	<!-- Load Heatmap Feature Layer from CDN -->
+	<script src="https://cdn.jsdelivr.net/leaflet.esri.heatmap-feature-layer/2.0.0-beta.1/esri-leaflet-heatmap-feature-layer.js"></script>
 
-		<!-- Scripts -->
-			<!--[if lte IE 8]><script src="assets/js/respond.min.js"></script><![endif]-->
-			<script>
-				if ('addEventListener' in window) {
-					window.addEventListener('load', function() { document.body.className = document.body.className.replace(/\bis-loading\b/, ''); });
-					document.body.className += (navigator.userAgent.match(/(MSIE|rv:11\.0)/) ? ' is-ie' : '');
-				}
-			</script>
-            <script src="assets/js/ga.js"></script>
+    <!-- Load Esri Leaflet Renderers from CDN -->
+    <script src="https://cdn.jsdelivr.net/leaflet.esri.renderers/2.0.4/esri-leaflet-renderers.js"></script>
 
-	</body>
+    <!-- Load Leaflet Omnivore -->
+    <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.3.1/leaflet-omnivore.min.js'></script>
+
+    <!-- Load L.esri.WebMap -->
+	<script src="https://cdn.jsdelivr.net/leaflet.esri.webmap/0.4.0/esri-leaflet-webmap.js"></script>
+
+  <style>
+    body { margin:0; padding:0; }
+    #map { position: absolute; top:0; bottom:0; right:0; left:0; }
+    .map-title-control {
+        background-color: #fff;
+        text-align: center;
+        text-decoration: none;
+        color: black;
+        padding: 10px;
+        border: 2px solid rgba(0,0,0,0.2);
+        border-radius: 4px;
+        font: bold 1em 'Lucida Console', 'Meiryo', Monaco, monospace;
+    }
+
+    /* label.css */
+    .esri-leaflet-webmap-labels {
+      font-size: 1em;
+      font-weight: bold;
+      text-transform: uppercase;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .esri-leaflet-webmap-labels div {
+      position: relative;
+      left: -50%;
+      text-shadow: 1px 1px 0px #fff, -1px 1px 0px #fff, 1px -1px 0px #fff, -1px -1px 0px #fff;
+    }
+  </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<script>
+    var webmapId = '22c504d229f14c789c5b49ebff38b941'; // Default WebMap ID
+
+    var urlParams = location.search.substring(1).split('&');
+    for(var i=0; urlParams[i]; i++) {
+        var param = urlParams[i].split('=');
+        if(param[0] === 'webmap') {
+            webmapId = param[1]
+        }
+    }
+
+	var webmap = L.esri.webMap(webmapId, { map: L.map("map") });
+
+    webmap.on('metadataLoad', function() {
+        var MapTitleControl = L.Control.extend({
+            options: {
+                position: 'topright'
+            },
+            onAdd: function (map) {
+                var container = L.DomUtil.create('div', 'map-title-control');
+                container.innerHTML = '<a target="_brank" href="http://www.arcgis.com/home/webmap/viewer.html?webmap=' + webmapId + '">' + webmap.title + '</a>'; // Add link to a webmap.
+                return container;
+            }
+        });
+        webmap._map.addControl(new MapTitleControl());
+    });
+
+    webmap.on('load', function() {
+        console.log('webmap loaded', webmap.layers);
+        var overlayMaps = {};
+        webmap.layers.map(function(l) {
+            console.log(l);
+            overlayMaps[l.title] = l.layer;
+        });
+        L.control.layers({}, overlayMaps, {
+            position: 'bottomright'
+        }).addTo(webmap._map);
+    });
+</script>
+
+</body>
 </html>
+
