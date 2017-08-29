@@ -32,7 +32,7 @@
 		id: 'mapbox.streets'
 	}).addTo(mymap);
 
-	mymap.on('click', function(e) {console.log(e.type)});
+	mymap.on('click mousedown touchstart mouseup touchend moveend', function(e) {console.log(e.type)});
 
 </script>
 
