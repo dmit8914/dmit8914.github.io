@@ -24,12 +24,9 @@
 
 
 <script>
-    var myCenter = new L.LatLng(55, 83);
-    var map = new L.Map('map', {center: myCenter, zoom: 15});
+    map = new L.Map('map', {center: new L.LatLng(55, 83), zoom: 15});
 
-    var positron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
-    }).addTo(map);
+    L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png').addTo(map);
 
     map.on('mousedown', function (e) {
         document.getElementById('info').innerHTML += '<div>mousedown</div>';
