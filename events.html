@@ -1,60 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link href="https://leafletjs-cdn.s3.amazonaws.com/content/leaflet/master/leaflet.css" rel="stylesheet" type="text/css" />
-    <script src="https://leafletjs-cdn.s3.amazonaws.com/content/leaflet/master/leaflet-src.js"></script>
-    <meta name="viewport" id="vp" content="initial-scale=1.0,user-scalable=no,maximum-scale=1,width=device-width" />
+	
+	<title>Quick Start - Leaflet</title>
 
-    <meta charset="utf-8">
-    <title>Leaflet JS Bin</title>
-    <style>
-        #map {
-            width:100vw;
-            height:100vh;
-        }
-        body {
-            margin: 0;
-        }
-    </style>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin=""></script>
+
+
+	
 </head>
 <body>
-<div id='map' style='z-index:1'></div>
-<div id='info' style='position: absolute; bottom:0; right:0; min-height: 50vh;z-index:10; background: rgba(255,255,255,0.9); font-size:75%'></div>
 
 
 
+<div id="mapid" style="width: 600px; height: 400px;"></div>
 <script>
-    map = new L.Map('map', {center: new L.LatLng(55, 83), zoom: 15});
 
-    L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png').addTo(map);
+	var mymap = L.map('mapid').setView([51.505, -0.09], 13);
 
-    map.on('mousedown', function (e) {
-        document.getElementById('info').innerHTML += '<div>mousedown</div>';
-    });
+	L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+		maxZoom: 18,
+		attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+			'<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+			'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+		id: 'mapbox.streets'
+	}).addTo(mymap);
 
-    map.on('mouseup', function (e) {
-        document.getElementById('info').innerHTML += '<div>mouseup</div>'
-    });
-
-    map.on('touchstart', function (e) {
-        document.getElementById('info').innerHTML += '<div>touchstart</div>'
-    });
-
-    map.on('touchend', function (e) {
-        document.getElementById('info').innerHTML += '<div>touchend</div>'
-    });
-
-    map.on('pointerdown', function (e) {
-        document.getElementById('info').innerHTML += '<div>pointerdown</div>'
-    });
-
-    map.on('pointerup', function (e) {
-        document.getElementById('info').innerHTML += '<div>pointerup</div>'
-    });
-
-    document.getElementById('info').innerHTML = '<div>Leaflet ' + L.version + '</div>';
-    document.getElementById('info').innerHTML += '<div>' + navigator.userAgent + '</div><hr>';
+	mymap.on('click', function(e) {console.log(e.type)});
 
 </script>
+
+
+
 </body>
 </html>
+
