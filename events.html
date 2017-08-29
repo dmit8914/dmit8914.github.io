@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="https://leafletjs-cdn.s3.amazonaws.com/content/leaflet/master/leaflet.css" rel="stylesheet" type="text/css" />
+    <script src="https://leafletjs-cdn.s3.amazonaws.com/content/leaflet/master/leaflet-src.js"></script>
+    <meta name="viewport" id="vp" content="initial-scale=1.0,user-scalable=no,maximum-scale=1,width=device-width" />
+
+    <meta charset="utf-8">
+    <title>Leaflet JS Bin</title>
+    <style>
+        #map {
+            width:100vw;
+            height:100vh;
+        }
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+<div id='map' style='z-index:1'></div>
+<div id='info' style='position: absolute; bottom:0; right:0; min-height: 50vh;z-index:10; background: rgba(255,255,255,0.9); font-size:75%'></div>
+
+
+
+<script>
+    var myCenter = new L.LatLng(55, 83);
+    var map = new L.Map('map', {center: myCenter, zoom: 15});
+
+    var positron = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
+    }).addTo(map);
+
+    map.on('mousedown', function (e) {
+        document.getElementById('info').innerHTML += '<div>mousedown</div>';
+    });
+
+    map.on('mouseup', function (e) {
+        document.getElementById('info').innerHTML += '<div>mouseup</div>'
+    });
+
+    map.on('touchstart', function (e) {
+        document.getElementById('info').innerHTML += '<div>touchstart</div>'
+    });
+
+    map.on('touchend', function (e) {
+        document.getElementById('info').innerHTML += '<div>touchend</div>'
+    });
+
+    map.on('pointerdown', function (e) {
+        document.getElementById('info').innerHTML += '<div>pointerdown</div>'
+    });
+
+    map.on('pointerup', function (e) {
+        document.getElementById('info').innerHTML += '<div>pointerup</div>'
+    });
+
+    document.getElementById('info').innerHTML = '<div>Leaflet ' + L.version + '</div>';
+    document.getElementById('info').innerHTML += '<div>' + navigator.userAgent + '</div><hr>';
+
+</script>
+</body>
+</html>
