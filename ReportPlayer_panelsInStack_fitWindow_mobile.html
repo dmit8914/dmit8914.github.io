@@ -31,7 +31,7 @@
 
     <script>
 
-        runPlayer = function (params) {
+        function runPlayer(params) {
             document.body.style.opacity = "0.01";
             require(["require", "esri/dijit/geoenrichment/nlsFix"],
                 function (relativeRequire, nlsFix) {
@@ -110,7 +110,7 @@
                             });
                         });
                 });
-        };
+        }
 
         function runInfographics(params) {
             require([
@@ -132,6 +132,11 @@
                     runPlayer(params);
                 });
         }
+
+        window.onload = function () {
+            var igParams = dataProvider.getInfographicParams();
+            console.log(igParams);
+        };
 
         function setInfographicsParams(params) {
             setTimeout(function () {
