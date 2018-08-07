@@ -133,11 +133,16 @@
                 });
         }
 
+        // Android
         window.onload = function () {
-            var igParams = dataProvider.getInfographicParams();
-            console.log(igParams);
+            if (dataProvider) {
+                var paramsString = dataProvider.getInfographicParams();
+                var igParams = JSON.parse(paramsString);
+                setInfographicsParams(igParams);
+            }
         };
 
+        // iOS
         function setInfographicsParams(params) {
             setTimeout(function () {
                 runInfographics(params)
