@@ -1,4 +1,8 @@
 CACHE MANIFEST
+https://bao.arcgis.com/dijit/themes/claro/claro.css
+https://bao.arcgis.com/esri/css/esri.css
+https://bao.arcgis.com/dojo/dojo.js
+
 https://bao.arcgis.com/dojo/nls/dojo_en-us.js
 https://bao.arcgis.com/esri/nls/jsapi.js
 https://bao.arcgis.com/esri/dijit/geoenrichment/ReportPlayer/ReportPlayer.js
