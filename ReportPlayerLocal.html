@@ -129,6 +129,15 @@
                       expires : params.expires
                   });
 
+                  esriId.getCredential(params.server).then(
+                      function(r) {
+                          console.log(r);
+                      },
+                      function(e) {
+                          console.log(e);
+                      }
+                  );
+
                   runPlayer(params);
               });
       }
