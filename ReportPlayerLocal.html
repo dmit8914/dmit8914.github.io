@@ -5,17 +5,18 @@
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
   <title>Report Player Sample (Local)</title>
 
-    <!--<link rel="stylesheet" href="../../../../../dijit/themes/claro/claro.css">-->
-    <link rel="stylesheet" href="https://baodev.arcgis.com/dijit/themes/claro/claro.css">
+  <!--<link rel="stylesheet" href="../../../../../../dijit/themes/claro/claro.css">-->
+  <link rel="stylesheet" href="https://bao.arcgis.com/dijit/themes/claro/claro.css">
 
-    <!--<link rel="stylesheet" href="../../../../../esri/css/esri.css">-->
-    <link rel="stylesheet" href="https://baodev.arcgis.com/esri/css/esri.css">
+  <!--<link rel="stylesheet" href="../../../../../../esri/css/esri.css">-->
+  <link rel="stylesheet" href="https://bao.arcgis.com/esri/css/esri.css">
 
   <script>
       var dojoConfig = { async: true, locale: typeof dojoConfig !== 'undefined' && dojoConfig.locale || null, packages: [{ name: 'dojo', location: './dojo' }, { name: 'dijit', location: './dijit' }, { name: 'dojox', location: './dojox' }, { name: 'dgrid', location: './dgrid' }, { name: 'dstore', location: './dstore' }, { name: 'put-selector', location: './put-selector' }, { name: 'xstyle', location: './xstyle' }, { name: 'esri', location: './esri' }, { name: 'moment', location: './moment' }] };
   </script>
-  <!--<script data-dojo-config="baseUrl: '../../../../..', isDebug: 1, waitSeconds: 60" src='../../../../../dojo/dojo.js'></script>-->
-    <script data-dojo-config="baseUrl: 'https://baodev.arcgis.com/', isDebug: 1, waitSeconds: 60" src='https://baodev.arcgis.com/dojo/dojo.js'></script>
+
+  <!--<script data-dojo-config="baseUrl: '../../../../../..', isDebug: 1, waitSeconds: 60" src='../../../../../../dojo/dojo.js'></script>-->
+  <script data-dojo-config="baseUrl: 'https://bao.arcgis.com/', isDebug: 1, waitSeconds: 60" src='https://bao.arcgis.com/dojo/dojo.js'></script>
 
   <style>
     html, body {
@@ -30,185 +31,129 @@
 
   <script>
 
-      require(["require", "esri/dijit/geoenrichment/nlsFix"],
-          function (relativeRequire, nlsFix) {
-              nlsFix.load(null, relativeRequire);
+      function runPlayer(params) {
+          document.body.style.opacity = "0.01";
+          require(["require", "esri/dijit/geoenrichment/nlsFix"],
+              function (relativeRequire, nlsFix) {
+                  nlsFix.load(null, relativeRequire);
 
-              require([
-                      "dojo/when",
+                  require([
+                          "esri/dijit/geoenrichment/ReportPlayer/ReportPlayer",
+                          "esri/dijit/geoenrichment/ReportPlayer/DataProviderGE",
+                          "esri/dijit/geoenrichment/ReportPlayer/PlayerCommands",
+                          "esri/dijit/geoenrichment/ReportPlayer/PlayerThemes",
+                          "esri/dijit/geoenrichment/ReportPlayer/PlayerResizeModes",
+                          "esri/dijit/geoenrichment/ReportPlayer/PlayerViewModes",
+                          "esri/dijit/geoenrichment/ReportPlayer/samples/supportClasses/AnalysisAreas",
 
-                      "esri/dijit/geoenrichment/ReportPlayer/ReportPlayer",
-                      "esri/dijit/geoenrichment/ReportPlayer/PlayerResizeModes",
-                      "esri/dijit/geoenrichment/ReportPlayer/PlayerViewModes",
-                      "esri/dijit/geoenrichment/ReportPlayer/PlayerThemes",
-                      "esri/dijit/geoenrichment/ReportPlayer/DataProviderGE",
-                      "esri/dijit/geoenrichment/ReportPlayer/PlayerCommands",
-                      "esri/dijit/geoenrichment/ReportPlayer/_devConfig",
-                      "esri/dijit/geoenrichment/ReportPlayer/samples/supportClasses/AnalysisAreas",
-                      "esri/dijit/geoenrichment/utils/UrlUtil",
-                      "esri/dijit/geoenrichment/utils/signIn/SignInHelper",
+                          "dojo/domReady!"
+                      ],
+                      function (
+                          ReportPlayer,
+                          DataProviderGE,
+                          PlayerCommands,
+                          PlayerThemes,
+                          PlayerResizeModes,
+                          PlayerViewModes,
+                          AnalysisAreas
+                      ) {
 
-                      "dojo/domReady!"
-                  ],
-                  function (
-                      when,
+                          document.body.style.opacity = "";
 
-                      ReportPlayer,
-                      PlayerResizeModes,
-                      PlayerViewModes,
-                      PlayerThemes,
-                      DataProviderGE,
-                      PlayerCommands,
-                      _devConfig,
-                      AnalysisAreas,
-                      UrlUtil,
-                      SignInHelper
-                  ) {
-
-                    /*
-
-                     INFO:
-
-                     URL query parameters:
-                     appId                        Application ID.
-                     portalUrl                    URL of the ArcGIS Portal.
-                     countryID                    2 charachter id of the country the report template data belongs to (e.g. US).
-                     reportID                     ID of the report template portal item.
-                     proxy                        URL of the proxy. Needed for printing and exporting the infographic when external resources need to be accessed (e.g. when printing a map).
-                     analysisAreas                Array of anaysis areas in json format (see DataProviderGE.js for more details about the format).
-                     viewMode                     Supported values: fullPages|panelsInSlides|panelsInStack. Default is "fullPages".
-                     theme                        Supported values: light|dark. Default is "dark".
-                     showToolbarInPopup           If true the toolbar will be shown in a compact popup mode.
-                     scaleSlidesToFitWindow       If true, the panels will be scaled to fit the whole window. Applicable only in viewMode=panelsInSlides.
-                     fitWindow                    If true, the player will be scaled to fit the window. Default is true.
-
-                     Example:
-
-                     Case 1: Feature with geometry
-
-                     .../ReportPlayerLocal.html?appId=g5vpmnaAyj9UmLKJ&portalUrl=https://www.arcgis.com&countryID=US&reportID=transportation-to-work-US&analysisAreas=[{"name":"Area name","shortName":"Area from url (short)","description":"Area description","address":"Area address","latitude":"Area Lat.","longitude":"Area Long.","feature":{"geometry":{"rings":[[[-10800107.01591563,3862641.714572819],[-10716918.351420047,4636712.237704219],[-9901669.439363334,4969050.952364072],[-9909988.305812893,4278585.037050734],[-10800107.01591563,3862641.714572819]]],"spatialReference":{"wkid":102100}},"attributes":{},"symbol":{"color":[200,50,50,50],"outline":{"color":[255,0,0,255],"width":1.5,"type":"esriSLS","style":"esriSLSSolid"},"type":"esriSFS","style":"esriSFSSolid"}}}]
-
-                     OR
-
-                     Case 2: only geography ids
-
-                     .../ReportPlayerLocal.html?appId=g5vpmnaAyj9UmLKJ&portalUrl=https://www.arcgis.com&&countryID=US&reportID=transportation-to-work-US&analysisAreas=[{"name":"Area name","shortName":"Area from url (short)","description":"Area description","address":"Area address","latitude":"Area Lat.","longitude":"Area Long.", "geographies": [{"id":"32","levelId":"US.States"},{"id":"06","levelId":"US.States"}]}]
-
-                     OR
-
-                     Case 3: only buffer
-
-                     .../ReportPlayerLocal.html?appId=g5vpmnaAyj9UmLKJ&portalUrl=https://www.arcgis.com&&countryID=US&reportID=transportation-to-work-US&analysisAreas=[{"name":"Area name","shortName":"Area from url (short)","description":"Area description","address":"Area address","latitude":"Area Lat.","longitude":"Area Long.","buffer":{"point":{"x":-13163008.811087687,"y":4035986.6896486743,"spatialReference":{"wkid":102100}},"units":"esriMiles","radius":1}}]
-                     */
-
-                      var DEFAULTS = {
-                          appId: "g5vpmnaAyj9UmLKJ",
-                          portalUrl: "https://www.arcgis.com",
-                          countryID: "US",
-                          reportID: "transportation-to-work",
-                          viewMode: PlayerViewModes.FULL_PAGES,
-                          theme: PlayerThemes.DARK
-                      };
-
-                      // QA
-                      if (getUrlVar("env") === "qa") {
-                          DEFAULTS.appId = "gzYR5C8WR8c0aRCH";
-                          DEFAULTS.portalUrl = "https://qaext.arcgis.com";
-                          DEFAULTS.geoenrichmentUrl = "http://ec2-52-21-196-36.compute-1.amazonaws.com/arcgis/rest/services/World/GeoEnrichmentServer";
-                      }
-                      else if (getUrlVar("env") === "dev") {
-                          DEFAULTS.appId = "NxqKcK37snEys6ZT";
-                          DEFAULTS.portalUrl = "https://devext.arcgis.com";
-                          DEFAULTS.geoenrichmentUrl = "https://geoenrichdev.arcgis.com/arcgis/rest/services/World/geoenrichmentserver";
-                      }
-
-                      _devConfig.createPlayerCommand.useTestBuild = true;
-
-                      function getUrlVar(name) {
-                          var href = window.location.href;
-                          return UrlUtil.getVariableValue(href, name) || DEFAULTS[name];
-                      };
-
-                      // parse url query parameters
-
-                      var appId = getUrlVar("appId");
-                      var portalUrl = getUrlVar("portalUrl");
-                      var countryID = getUrlVar("countryID").toUpperCase();
-                      var reportID = getUrlVar("reportID");
-                      var analysisAreasJson = getUrlVar("analysisAreas");
-                      if (typeof analysisAreasJson === "string")
-                          analysisAreasJson = JSON.parse(analysisAreasJson);
-                      var viewMode = getUrlVar("viewMode");
-                      var showToolbarInPopup = getUrlVar("showToolbarInPopup") === "true";
-                      var scaleSlidesToFitWindow = getUrlVar("scaleSlidesToFitWindow") === "true";
-                      var fitWindow = getUrlVar("fitWindow") !== "false";
-                      var theme = getUrlVar("theme");
-
-                      esriConfig.defaults.io.proxyUrl = getUrlVar("proxy") || null;
-
-                      if (!fitWindow)
-                          playerDiv.style.display = "inline-block";
-
-                      //--------------------------------------------------------------------------
-                      //
-                      //  Methods: run player
-                      //
-                      //--------------------------------------------------------------------------
-
-                      SignInHelper.signIn({
-                          portalUrl: portalUrl,
-                          appId: appId,
-                          callback: function () {
-
-                              var dataProvider = new DataProviderGE();
-                              dataProvider.registerCommand(PlayerCommands.PDF);
-                              dataProvider.registerCommand(PlayerCommands.IMAGE);
-                              dataProvider.registerCommand(PlayerCommands.PRINT);
-                              dataProvider.registerCommand(PlayerCommands.DYNAMIC_HTML);
-
-                              var player = new ReportPlayer({
-                                  config: {
-                                      esriDijitCssUrl: "",
-                                      esriCssUrl: "",
-                                      playerSourceRootUrl: ""
-                                  },
-                                  viewMode: viewMode,
-                                  theme: theme,
-                                  showToolbarInPopup: showToolbarInPopup,
-                                  scaleSlidesToFitWindow: scaleSlidesToFitWindow,
-                                  resizeMode: fitWindow ? PlayerResizeModes.FIT_WINDOW : PlayerResizeModes.AUTO,
-                                  dataProvider: dataProvider
-                              }).placeAt(playerDiv);
-
-                              var params = {
-                                  portalUrl: portalUrl,
-                                  geoenrichmentUrl: DEFAULTS.geoenrichmentUrl,
-                                  countryID: countryID,
-                                  reportID: reportID,
-                                  analysisAreas: analysisAreasJson || AnalysisAreas.getAreas({
-                                      numAreas: 2,
-                                      big: false,
-                                      isGeographyId: false,
-                                      initialize: true,
-                                      countryID: countryID
-                                  })
-                              };
-
-                              when(player.playReport(params, {
-                                  waitUntilAllContentIsReady: true,
-                                  disableAnimation: false
-                              }), function () {
-
-                                  //when(player.executeCommand(PlayerCommands.DYNAMIC_HTML, {
-                                  //    returnAsHtmlText: true
-                                  //}), function (htmlText) {
-                                  //    console.log(htmlText);
-                                  //});
-                              });
+                          var width = params.width;
+                          var height = params.height;
+                          var maxWidth = params.maxWidth;
+                          var maxHeight = params.maxHeight;
+                          var analysisAreasJson = params.analysisAreas;
+                          if (typeof analysisAreasJson === "string") {
+                              analysisAreasJson = JSON.parse(analysisAreasJson);
                           }
+
+                          var dataProvider = new DataProviderGE();
+                          dataProvider.registerCommand(PlayerCommands.PDF);
+                          dataProvider.registerCommand(PlayerCommands.IMAGE);
+                          dataProvider.registerCommand(PlayerCommands.PRINT);
+                          dataProvider.registerCommand(PlayerCommands.DYNAMIC_HTML);
+
+                          var player = new ReportPlayer({
+                              viewMode: PlayerViewModes.PANELS_IN_STACK,
+                              resizeMode: PlayerResizeModes.FIT_WINDOW,
+                              showToolbarInPopup: false,
+                              dataProvider: dataProvider,
+                              theme: PlayerThemes.DARK
+                          }).placeAt(playerDiv);
+
+                          if (params.dimensions)
+                              player.resize(params.dimensions.w, params.dimensions.h);
+                          else if (width && height)
+                              player.resize(Number(width), Number(height));
+
+                          if (params.constraints) {
+                              player.setMaxWidth(params.constraints.maxWidth);
+                              player.setMaxHeight(params.constraints.maxHeight);
+                          }
+                          else if (maxWidth || maxHeight) {
+                              maxWidth && player.setMaxWidth(Number(maxWidth));
+                              maxHeight && player.setMaxHeight(Number(maxHeight));
+                          }
+
+                          player.playReport({
+                              portalUrl: params.server,
+                              countryID: params.countryID,
+                              reportID: params.reportID,
+                              analysisAreas: analysisAreasJson || AnalysisAreas.getAreas({
+                                  numAreas: 2,
+                                  big: false,
+                                  isGeographyId: false,
+                                  initialize: true
+                              })
+                          });
                       });
+              });
+      }
+
+      function runInfographics(params) {
+          require([
+                  "esri/IdentityManager",
+
+                  "dojo/domReady!"
+              ],
+              function (
+                  esriId
+              ) {
+                  esriId.registerToken({
+                      server  : params.server,
+                      ssl     : true, // set to true if ssl is required
+                      token   : params.token,
+                      userId  : params.userId,
+                      expires : params.expires
                   });
-          });
+
+                  runPlayer(params);
+              });
+      }
+
+      // Android
+      window.onload = function () {
+          var igParams = {
+              "server":"https://www.arcgis.com",
+              "userId":"dandreev_ba",
+              "token":"h5EzJUGrlAlfkY6tkXHNfSp0qbvm9zTeHrGi4sRaokz03bwaGYSIcUMe0P_Q0Fag3gnHQ96qwjRBEAThZ1jwJ10rQhe4X-9_c1pC_HBcle2IYvPkxrnLafNYJ6vrfAxFvsD-4leheLLkW-aSEC7_NhdJDfoFd7udwDmpNplqIQoxdqW3NV79sQ6CJp3bE-LRPVpb5mQPF_fTaHYBt6xFJkfxg27VblERhUYuMGXQdZk.",
+              "expires":988,
+              "reportID":"c931fc6ebdb440189a8bc6bd34115807", //Executive Summary - Call Outs
+              "countryID":"US",
+              "analysisAreas":[{"name":"909 Webster St","shortName":"__PLACEHOLDER__","description":"__PLACEHOLDERDESC__","address":"Area address","latitude":"Area Lat.","longitude":"Area Long.","feature":{"geometry":{"rings":[[[-117.183919906937,34.0697269438569],[-117.183738707761,34.0691432946468],[-117.182437896924,34.0691432946468],[-117.182167053069,34.0690975187101],[-117.181852340886,34.0688724523362],[-117.181808471659,34.0688724523362],[-117.181583405053,34.0685138696288],[-117.181539535826,34.0682430267944],[-117.181583405053,34.0673465727991],[-117.180011748564,34.0672550197036],[-117.179561615352,34.0669422147183],[-117.179428101446,34.0666713713248],[-117.179382324198,34.0662212369961],[-117.178977966437,34.066179276259],[-117.17893409721,34.066179276259],[-117.178663254254,34.066041945803],[-117.178350449194,34.0655956271676],[-117.178304671945,34.0652790066793],[-117.178483963099,34.0646953580845],[-117.178215027266,34.0643367770478],[-117.178169250018,34.0640201570649],[-117.178258895595,34.0636615746594],[-117.178529738551,34.0633029937133],[-117.178798676181,34.0631694792306],[-117.179428101446,34.0631237030433],[-117.179428101446,34.0628528593514],[-117.179428101446,34.0628108976905],[-117.179471969775,34.0620021817064],[-117.179786681958,34.0615520478771],[-117.180370330873,34.0613727572237],[-117.180641173829,34.0614185328684],[-117.180999756138,34.0616855619312],[-117.181539535826,34.0617313388954],[-117.181447983125,34.06132698081],[-117.181762695309,34.0603389741974],[-117.181762695309,34.0602931979695],[-117.182033539164,34.0599346161666],[-117.18257141083,34.0597553250684],[-117.183155059745,34.0599346161666],[-117.183380127249,34.0602054602544],[-117.183425902701,34.0593967439667],[-117.183738707761,34.0589466089508],[-117.184009551616,34.0588130950471],[-117.18499755919,34.0587215416627],[-117.185041428417,34.0587215416627],[-117.185176849446,34.0586757660497],[-117.184951781941,34.0583171841017],[-117.184818268035,34.0573291781256],[-117.184907912714,34.0569705956904],[-117.185176849446,34.0566120147153],[-117.185716629134,34.056432724031],[-117.186344147275,34.0566120147153],[-117.18665885856,34.0570583337773],[-117.186704635809,34.0574626921341],[-117.186748505036,34.0574626921341],[-117.186748505036,34.0575542446457],[-117.187242508374,34.0576000208643],[-117.187692641586,34.0579128268444],[-117.187826157288,34.0581836699508],[-117.187826157288,34.0586757660497],[-117.188814163065,34.0587673187394],[-117.189264297176,34.0590801241325],[-117.18944358833,34.0596218109502],[-117.189264297176,34.0602054602544],[-117.189218520826,34.0602054602544],[-117.188814163065,34.0605182648051],[-117.187421798629,34.0605182648051],[-117.187377930301,34.0619106287901],[-117.188320159728,34.0619106287901],[-117.188591002684,34.0615520478771],[-117.188949584993,34.0614185328684],[-117.188995361343,34.0614185328684],[-117.18944358833,34.0614185328684],[-117.189622878586,34.0615520478771],[-117.189847946091,34.0614185328684],[-117.190431595006,34.0614185328684],[-117.19061088616,34.0608348852203],[-117.191061020271,34.0605182648051],[-117.191375731556,34.0604724879299],[-117.191644669186,34.0605182648051],[-117.192092896173,34.0608348852203],[-117.192228317202,34.0611019131453],[-117.192274093552,34.0615062708161],[-117.192274093552,34.0615520478771],[-117.192274093552,34.0619564056327],[-117.193666457988,34.0620021817064],[-117.193935393821,34.0621356957956],[-117.194250106903,34.06258583099],[-117.19429397613,34.0628986356851],[-117.194114684976,34.0634365079856],[-117.193666457988,34.0637531279166],[-117.193262100228,34.0637989037639],[-117.193441391382,34.0640201570649],[-117.193441391382,34.064065932768],[-117.193620681638,34.0643367770478],[-117.193666457988,34.0649204251357],[-117.193845749143,34.0655040736687],[-117.193845749143,34.0667629243067],[-117.193531036061,34.067209244235],[-117.193262100228,34.0673465727991],[-117.192497253035,34.0673923489376],[-117.192317962779,34.0677509311825],[-117.192317962779,34.0677967071026],[-117.192092896173,34.0679302217359],[-117.192049026048,34.0685596473691],[-117.191734313864,34.0690059660184],[-117.191196442198,34.069189072047],[-117.190073012697,34.0692310327818],[-117.188814163065,34.0691432946468],[-117.189218520826,34.0694103239238],[-117.189218520826,34.0694560996914],[-117.18944358833,34.0697727201976],[-117.18944358833,34.0703563687922],[-117.189308167301,34.0706233979663],[-117.188859940314,34.0709400178307],[-117.185581207206,34.07098579426],[-117.185535430856,34.07098579426],[-117.185266495023,34.07098579426],[-117.185222625796,34.0709819791865],[-117.184951781941,34.0709400178307],[-117.184503554954,34.0706233979663],[-117.184368133925,34.0703563687922],[-117.184368133925,34.0699939727825],[-117.184099197193,34.0699062346935],[-117.183919906937,34.0697269438569]]],"spatialReference":{"wkid":4326}},"attributes":{"OBJECTID":19,"RELID":"0de5dad2-9835-4691-ba34-2e59b64e17cf","RING":1,"DESCRIPTION":null,"SYMBOL":"{\"color\":[204,51,0,128],\"outline\":{\"color\":[204,51,0,255],\"width\":1.5,\"type\":\"esriSLS\",\"style\":\"esriSLSSolid\"},\"type\":\"esriSFS\",\"style\":\"esriSFSSolid\"}","SHAPE__Area":0.000137141270368467,"SHAPE__Length":0.0625985762451564}}}]
+          };
+          setInfographicsParams(igParams);
+      };
+
+      // iOS
+      function setInfographicsParams(params) {
+          setTimeout(function () {
+              runInfographics(params)
+          }, 1);
+      }
+
   </script>
 </head>
 <body class="claro">
