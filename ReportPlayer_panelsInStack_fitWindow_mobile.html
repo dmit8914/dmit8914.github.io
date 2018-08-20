@@ -32,7 +32,6 @@
     <script>
 
         function runPlayer(params) {
-            document.body.style.opacity = "0.01";
             require(["require", "esri/dijit/geoenrichment/nlsFix"],
                 function (relativeRequire, nlsFix) {
                     nlsFix.load(null, relativeRequire);
@@ -57,8 +56,6 @@
                             PlayerViewModes,
                             AnalysisAreas
                         ) {
-
-                            document.body.style.opacity = "";
 
                             var width = params.width;
                             var height = params.height;
@@ -134,13 +131,13 @@
         }
 
         // Android
-//        window.onload = function () {
-//            if (dataProvider) {
-//                var paramsString = dataProvider.getInfographicParams();
-//                var igParams = JSON.parse(paramsString);
-//                setInfographicsParams(igParams);
-//            }
-//        };
+        window.onload = function () {
+            if (dataProvider) {
+                var paramsString = dataProvider.getInfographicParams();
+                var igParams = JSON.parse(paramsString);
+                setInfographicsParams(igParams);
+            }
+        };
 
         // iOS
         function setInfographicsParams(params) {
@@ -151,7 +148,7 @@
 
     </script>
 </head>
-<body class="claro">
+<body class="claro" style="background-color: #525659;">
 <div id="playerDiv"></div>
 </body>
 </html>
