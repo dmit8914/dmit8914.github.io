@@ -125,12 +125,26 @@
                 });
         }
 
-        // Android
+        // Android & Browser
         window.onload = function () {
             if (window.dataProvider) {
+                // Android
                 var paramsString = dataProvider.getInfographicParams();
                 var igParams = JSON.parse(paramsString);
                 setInfographicsParams(igParams);
+            }
+            else {
+                // Browser
+                window.addEventListener("message", function (event) {
+                    console.log(event);
+                });
+
+                if (window.opener) {
+                    window.opener.postMessage({
+                        href   : window.location.href,
+                        status : "waiting_for_infographic_parameters"
+                    }, "*");
+                }
             }
         };
 
