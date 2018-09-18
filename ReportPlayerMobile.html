@@ -136,8 +136,9 @@
             else {
                 // Browser
                 window.addEventListener("message", function (event) {
-                    var igParams = event.data;
-                    if (igParams) {
+                    var type = event.data && event.data.type;
+                    if (type === "infographic_parameters") {
+                        var igParams = event.data.infographicParameters;
                         setInfographicsParams(igParams);
                     }
                 });
