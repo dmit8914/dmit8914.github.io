@@ -136,7 +136,10 @@
             else {
                 // Browser
                 window.addEventListener("message", function (event) {
-                    console.log(event);
+                    var igParams = event.data;
+                    if (igParams) {
+                        setInfographicsParams(igParams);
+                    }
                 });
 
                 if (window.opener) {
