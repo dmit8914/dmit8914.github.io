@@ -5,15 +5,15 @@
     <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
     <title>Report Player Sample (Local)</title>
 
-    <link rel="stylesheet" href="https://baodev.arcgis.com/dijit/themes/claro/claro.css">
+    <link rel="stylesheet" href="dijit/themes/claro/claro.css">
 
-    <link rel="stylesheet" href="https://baodev.arcgis.com/esri/css/esri.css">
+    <link rel="stylesheet" href="esri/css/esri.css">
 
     <script>
         var dojoConfig = { async: true, locale: typeof dojoConfig !== 'undefined' && dojoConfig.locale || null, packages: [{ name: 'dojo', location: './dojo' }, { name: 'dijit', location: './dijit' }, { name: 'dojox', location: './dojox' }, { name: 'dgrid', location: './dgrid' }, { name: 'dstore', location: './dstore' }, { name: 'put-selector', location: './put-selector' }, { name: 'xstyle', location: './xstyle' }, { name: 'esri', location: './esri' }, { name: 'moment', location: './moment' }] };
     </script>
 
-    <script data-dojo-config="baseUrl: 'https://baodev.arcgis.com/', isDebug: 1, waitSeconds: 60" src='https://baodev.arcgis.com/dojo/dojo.js'></script>
+    <script data-dojo-config="baseUrl: '', isDebug: 1, waitSeconds: 60" src='dojo/dojo.js'></script>
 
     <style>
         html, body {
@@ -64,6 +64,10 @@
                             if (typeof combinedAreasInfoJson === "string") {
                                 combinedAreasInfoJson = JSON.parse(combinedAreasInfoJson);
                             }
+                            var attachmentsProviderJson = params.attachmentsProvider;
+                            if(typeof attachmentsProviderJson === "string") {
+                                attachmentsProviderJson = JSON.parse(attachmentsProviderJson);
+                            }
 
                             var dataProvider = new DataProviderGE();
                             dataProvider.registerCommand(PlayerCommands.PDF);
@@ -98,7 +102,8 @@
                                 countryID: params.countryID,
                                 reportID: params.reportID,
                                 analysisAreas: analysisAreasJson,
-                                combinedAreasInfo: combinedAreasInfoJson
+                                combinedAreasInfo: combinedAreasInfoJson,
+                                attachmentsProvider: attachmentsProviderJson
                             });
                         });
                 });
