@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+    <title>Report Player Sample (Local)</title>
+
+    <link rel="stylesheet" href="https://baodev.arcgis.com/dijit/themes/claro/claro.css">
+
+    <link rel="stylesheet" href="https://baodev.arcgis.com/esri/css/esri.css">
+
+    <script>
+        var dojoConfig = { async: true, locale: typeof dojoConfig !== 'undefined' && dojoConfig.locale || null, packages: [{ name: 'dojo', location: './dojo' }, { name: 'dijit', location: './dijit' }, { name: 'dojox', location: './dojox' }, { name: 'dgrid', location: './dgrid' }, { name: 'dstore', location: './dstore' }, { name: 'put-selector', location: './put-selector' }, { name: 'xstyle', location: './xstyle' }, { name: 'esri', location: './esri' }, { name: 'moment', location: './moment' }] };
+    </script>
+
+    <script data-dojo-config="baseUrl: 'https://baodev.arcgis.com/', isDebug: 1, waitSeconds: 60" src='https://baodev.arcgis.com/dojo/dojo.js'></script>
+
+    <style>
+        html, body {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            overflow: hidden;
+            font-size: 13px;
+            font-family: "Avenir Next";
+        }
+    </style>
+
+    <script>
+
+        function runPlayer(params) {
+            require(["require", "esri/dijit/geoenrichment/nlsFix"],
+                function (relativeRequire, nlsFix) {
+                    nlsFix.load(null, relativeRequire);
+
+                    require([
+                            "esri/dijit/geoenrichment/ReportPlayer/ReportPlayer",
+                            "esri/dijit/geoenrichment/ReportPlayer/DataProviderGE",
+                            "esri/dijit/geoenrichment/ReportPlayer/PlayerCommands",
+                            "esri/dijit/geoenrichment/ReportPlayer/PlayerThemes",
+                            "esri/dijit/geoenrichment/ReportPlayer/PlayerResizeModes",
+                            "esri/dijit/geoenrichment/ReportPlayer/PlayerViewModes",
+
+                            "dojo/domReady!"
+                        ],
+                        function (
+                            ReportPlayer,
+                            DataProviderGE,
+                            PlayerCommands,
+                            PlayerThemes,
+                            PlayerResizeModes,
+                            PlayerViewModes
+                        ) {
+
+                            var width = params.width;
+                            var height = params.height;
+                            var maxWidth = params.maxWidth;
+                            var maxHeight = params.maxHeight;
+                            var analysisAreasJson = params.analysisAreas;
+                            if (typeof analysisAreasJson === "string") {
+                                analysisAreasJson = JSON.parse(analysisAreasJson);
+                            }
+                            var combinedAreasInfoJson = params.combinedAreasInfo;
+                            if (typeof combinedAreasInfoJson === "string") {
+                                combinedAreasInfoJson = JSON.parse(combinedAreasInfoJson);
+                            }
+                            var attachmentsProviderJson = params.attachmentsProvider;
+                            if(typeof attachmentsProviderJson === "string") {
+                                attachmentsProviderJson = JSON.parse(attachmentsProviderJson);
+                            }
+
+                            var dataProvider = new DataProviderGE();
+                            dataProvider.registerCommand(PlayerCommands.PDF);
+                            dataProvider.registerCommand(PlayerCommands.IMAGE);
+                            dataProvider.registerCommand(PlayerCommands.PRINT);
+                            dataProvider.registerCommand(PlayerCommands.DYNAMIC_HTML);
+
+                            var player = new ReportPlayer({
+                                viewMode: PlayerViewModes.PANELS_IN_STACK,
+                                resizeMode: PlayerResizeModes.FIT_WINDOW,
+                                showToolbarInPopup: false,
+                                dataProvider: dataProvider,
+                                theme: PlayerThemes.DARK
+                            }).placeAt(playerDiv);
+
+                            if (params.dimensions)
+                                player.resize(params.dimensions.w, params.dimensions.h);
+                            else if (width && height)
+                                player.resize(Number(width), Number(height));
+
+                            if (params.constraints) {
+                                player.setMaxWidth(params.constraints.maxWidth);
+                                player.setMaxHeight(params.constraints.maxHeight);
+                            }
+                            else if (maxWidth || maxHeight) {
+                                maxWidth && player.setMaxWidth(Number(maxWidth));
+                                maxHeight && player.setMaxHeight(Number(maxHeight));
+                            }
+
+                            player.playReport({
+                                portalUrl: params.server,
+                                countryID: params.countryID,
+                                reportID: params.reportID,
+                                analysisAreas: analysisAreasJson,
+                                combinedAreasInfo: combinedAreasInfoJson,
+                                attachmentsProvider: attachmentsProviderJson
+                            });
+                        });
+                });
+        }
+
+        function runInfographics(params) {
+            require([
+                    "esri/IdentityManager",
+
+                    "dojo/domReady!"
+                ],
+                function (
+                    esriId
+                ) {
+                    esriId.registerToken({
+                        server  : params.server,
+                        ssl     : true, // set to true if ssl is required
+                        token   : params.token,
+                        userId  : params.userId,
+                        expires : params.expires
+                    });
+
+                    runPlayer(params);
+                });
+        }
+
+        // Android & Browser
+        window.onload = function () {
+            if (window.dataProvider) {
+                // Android
+                var paramsString = dataProvider.getInfographicParams();
+                var igParams = JSON.parse(paramsString);
+                setInfographicsParams(igParams);
+            }
+            else {
+                // Browser
+                window.addEventListener("message", function (event) {
+                    var type = event.data && event.data.type;
+                    if (type === "infographic_parameters") {
+                        var igParamsString = event.data.infographicParameters;
+                        var igParams = JSON.parse(igParamsString);
+                        setInfographicsParams(igParams);
+                    }
+                });
+
+                if (window.opener) {
+                    window.opener.postMessage({
+                        href   : window.location.href,
+                        status : "waiting_for_infographic_parameters"
+                    }, "*");
+                }
+            }
+        };
+
+        // iOS
+        function setInfographicsParams(params) {
+            setTimeout(function () {
+                runInfographics(params)
+            }, 1);
+        }
+
+    </script>
+</head>
+<body class="claro">
+<div id="playerDiv"></div>
+</body>
+</html>
